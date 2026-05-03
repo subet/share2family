@@ -5,11 +5,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/useTheme';
 import { useTranslation } from '@/i18n';
-import { useUIStore } from '@/stores/ui';
 import { Button } from '@/components/ui/Button';
 import { spacing } from '@/theme';
 import { signInAnonymously, signInWithApple, signInWithGoogle } from '@/lib/auth';
-import { registerForPushNotifications } from '@/lib/notifications';
 import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
 export default function SignInScreen() {
@@ -17,7 +15,6 @@ export default function SignInScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState<'apple' | 'google' | 'anon' | null>(null);
-  const setNotificationsEnabled = useUIStore((s) => s.setNotificationsEnabled);
   const permissionsAsked = useRef(false);
 
   useEffect(() => {
@@ -29,16 +26,8 @@ export default function SignInScreen() {
       if (Platform.OS === 'ios') {
         await requestTrackingPermissionsAsync();
       }
-
-      // Ask push notification permission
-      const token = await registerForPushNotifications();
-      if (token) {
-        setNotificationsEnabled(true);
-      } else {
-        setNotificationsEnabled(false);
-      }
     })();
-  }, [setNotificationsEnabled]);
+  }, []);
 
   const handleSignIn = async (method: 'apple' | 'google' | 'anon') => {
     setLoading(method);

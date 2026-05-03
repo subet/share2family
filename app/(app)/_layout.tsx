@@ -43,6 +43,10 @@ export default function AppLayout() {
       <Stack.Screen name="edit-profile" />
       <Stack.Screen name="edit-family" />
       <Stack.Screen name="link-account" />
+      <Stack.Screen
+        name="paywall"
+        options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+      />
     </Stack>
   );
 }

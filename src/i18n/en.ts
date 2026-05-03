@@ -48,7 +48,7 @@ export const en = {
   // Create family
   create_family_title: 'Create a family',
   create_family_subtitle: 'Choose a name for your shared space',
-  create_family_placeholder: 'e.g. "The Demir Family"',
+  create_family_placeholder: 'e.g. "The Brown Family"',
   create_family_name_required: 'Name required',
   create_family_name_required_message: 'Please enter a family name',
 
@@ -59,6 +59,9 @@ export const en = {
   join_family_button: 'Join',
   join_family_error_title: 'Could not join',
   join_family_error_message: 'Invalid or expired code',
+  join_family_full_title: 'Family is full',
+  join_family_full_message: 'This family has reached the maximum number of members. Upgrade to Premium to add more members.',
+  join_family_upgrade: 'Upgrade to Premium',
 
   // Invite
   invite_title: 'Family created!',
@@ -100,7 +103,7 @@ export const en = {
   // Edit family
   edit_family_title: 'Edit Family',
   edit_family_name_label: 'Family name',
-  edit_family_name_placeholder: 'e.g. The Demir Family',
+  edit_family_name_placeholder: 'e.g. The Brown Family',
   edit_family_members: 'Members',
   edit_family_invite_code: 'Invite Code',
   edit_family_invite_hint: 'Share this code with your partner to join',
@@ -131,6 +134,39 @@ export const en = {
   settings_signout_title: 'Sign out',
   settings_signout_message: 'Are you sure you want to sign out?',
   settings_version: 'Share2Family v{{version}}',
+
+  // Paywall
+  paywall_title: 'Upgrade to Premium',
+  paywall_subtitle: 'Unlock everything for your family',
+  paywall_feature_1: 'Add more family members',
+  paywall_feature_2: 'Shared lists synced across devices',
+  paywall_feature_3: 'Cloud backup',
+  paywall_feature_4: 'Smart reminders',
+  paywall_feature_5: 'Offline access',
+  paywall_weekly: 'Weekly',
+  paywall_monthly: 'Monthly',
+  paywall_yearly: 'Yearly',
+  paywall_lifetime: 'Lifetime',
+  paywall_popular: 'Popular',
+  paywall_one_time: 'One-time',
+  paywall_continue: 'Continue',
+  paywall_restore: 'Restore purchases',
+  paywall_restoring: 'Restoring...',
+  paywall_terms: 'Terms of Use',
+  paywall_privacy: 'Privacy Policy',
+  paywall_subscription_terms:
+    'Payment will be charged to your App Store account. Subscription automatically renews at {{price}}/{{period}} unless cancelled at least 24 hours before the end of the current period.',
+  paywall_lifetime_terms:
+    'One-time payment of {{price}} charged to your App Store account. Unlocks premium features forever with no recurring charges.',
+  paywall_purchase_error: 'Purchase could not be completed. Please try again.',
+  paywall_restore_error: 'Could not restore purchases. Please try again.',
+  paywall_restored_title: 'Restored!',
+  paywall_restored_message: 'Your premium access has been restored.',
+  paywall_no_purchases_title: 'No purchases found',
+  paywall_no_purchases_message: 'We could not find any previous purchases for this account.',
+  paywall_unavailable: 'Subscriptions are currently unavailable. Please try again later.',
+  paywall_skip: 'Skip',
+  paywall_upgrade: 'Upgrade to Premium',
 };
 
 export type TranslationKeys = typeof en;

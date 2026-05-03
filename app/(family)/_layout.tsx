@@ -11,6 +11,11 @@ export default function FamilyLayout() {
         contentStyle: { backgroundColor: colors.background },
         animation: 'slide_from_right',
       }}
-    />
+    >
+      <Stack.Screen
+        name="paywall"
+        options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+      />
+    </Stack>
   );
 }

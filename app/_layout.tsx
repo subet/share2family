@@ -17,6 +17,7 @@ import {
   addNotificationResponseListener,
 } from '@/lib/notifications';
 import { getNotificationsEnabled } from '@/lib/storage';
+import { initPurchases } from '@/lib/purchases';
 import '../global.css';
 
 function AuthListener() {
@@ -27,6 +28,9 @@ function AuthListener() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
+
+      // Init RevenueCat with user ID if available
+      initPurchases(session?.user?.id);
 
       // Auto-register push token if notifications enabled
       if (session?.user && getNotificationsEnabled()) {

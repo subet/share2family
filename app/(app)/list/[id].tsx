@@ -21,7 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useTheme } from '@/lib/useTheme';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import {
   useChecklistItems,
   useAddChecklistItem,
@@ -32,7 +32,6 @@ import {
 import { useUpdateNote, useArchiveNote } from '@/features/notes/hooks/useNotes';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { spacing, radii } from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { NOTE_ICONS, DEFAULT_NOTE_ICON } from '@/constants/emojis';
@@ -392,17 +391,23 @@ export default function ChecklistDetailScreen() {
         index={-1}
         snapPoints={[420]}
         enablePanDownToClose
+        enableDynamicSizing={false}
+        keyboardBehavior="interactive"
+        keyboardBlurBehavior="restore"
+        android_keyboardInputMode="adjustResize"
         backgroundStyle={{ backgroundColor: colors.surface }}
         handleIndicatorStyle={{ backgroundColor: colors.border }}
       >
         <BottomSheetView style={[styles.sheetContent, { paddingBottom: insets.bottom + spacing.lg }]}>
           <Text style={[styles.sheetTitle, { color: colors.text }]}>{t('checklist_edit_title')}</Text>
 
-          <Input
+          <BottomSheetTextInput
             placeholder={t('checklist_edit_placeholder')}
             value={editTitle}
             onChangeText={setEditTitle}
             autoCapitalize="sentences"
+            placeholderTextColor={colors.textTertiary}
+            style={[styles.sheetInput, { backgroundColor: colors.surfaceSecondary, color: colors.text }]}
           />
 
           {/* Icon picker */}
@@ -582,5 +587,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
+  },
+  sheetInput: {
+    fontSize: 16,
+    paddingVertical: spacing.md + 2,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radii.md,
+    width: '100%',
   },
 });

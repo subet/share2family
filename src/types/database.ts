@@ -33,6 +33,7 @@ export interface Database {
           invite_code: string | null;
           invite_code_expires_at: string | null;
           max_members: number;
+          is_premium: boolean;
           created_at: string;
         };
         Insert: {
@@ -41,6 +42,7 @@ export interface Database {
           invite_code?: string | null;
           invite_code_expires_at?: string | null;
           max_members?: number;
+          is_premium?: boolean;
           created_at?: string;
         };
         Update: {
@@ -49,6 +51,7 @@ export interface Database {
           invite_code?: string | null;
           invite_code_expires_at?: string | null;
           max_members?: number;
+          is_premium?: boolean;
         };
         Relationships: [];
       };
@@ -314,6 +317,14 @@ export interface Database {
       };
       upsert_item_history: {
         Args: { p_family_id: string; p_user_id: string; p_item_name: string };
+        Returns: undefined;
+      };
+      check_family_can_join: {
+        Args: { p_code: string };
+        Returns: Json;
+      };
+      upgrade_family_to_premium: {
+        Args: { p_family_id: string };
         Returns: undefined;
       };
       is_family_member: {

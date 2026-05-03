@@ -20,6 +20,7 @@ import { checkIsConnected } from '@/lib/network';
 import { warmCache } from '@/features/sync/cacheWarmer';
 import { clearAllCache } from '@/lib/offlineCache';
 import { LANGUAGES } from '@/constants/languages';
+import { useIsPremium } from '@/stores/premium';
 import type { ThemePreference } from '@/lib/storage';
 
 export default function SettingsScreen() {
@@ -41,6 +42,7 @@ export default function SettingsScreen() {
   const offlineModeEnabled = useUIStore((s) => s.offlineModeEnabled);
   const setOfflineModeEnabled = useUIStore((s) => s.setOfflineModeEnabled);
 
+  const isPremium = useIsPremium();
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [offlineLoading, setOfflineLoading] = useState(false);
 
@@ -162,72 +164,106 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('settings_preferences')}</Text>
 
-          {/* Theme */}
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.prefLabel, { color: colors.text }]}>{t('settings_theme')}</Text>
-            <View style={styles.themeOptions}>
-              {themeOptions.map((opt) => (
-                <Pressable key={opt.value} onPress={() => { selectionHaptic(); setThemePreference(opt.value); }}
-                  style={[styles.themeOption, {
-                    backgroundColor: themePreference === opt.value ? colors.accent : colors.surfaceSecondary,
-                    borderColor: themePreference === opt.value ? colors.accent : colors.border,
-                  }]}>
-                  <Text style={[styles.themeOptionText, { color: themePreference === opt.value ? '#FFFFFF' : colors.textSecondary }]}>
-                    {opt.label}
-                  </Text>
-                </Pressable>
-              ))}
+            {/* Theme */}
+            <View>
+              <Text style={[styles.prefLabel, { color: colors.text }]}>{t('settings_theme')}</Text>
+              <View style={styles.themeOptions}>
+                {themeOptions.map((opt) => (
+                  <Pressable key={opt.value} onPress={() => { selectionHaptic(); setThemePreference(opt.value); }}
+                    style={[styles.themeOption, {
+                      backgroundColor: themePreference === opt.value ? colors.accent : colors.surfaceSecondary,
+                      borderColor: themePreference === opt.value ? colors.accent : colors.border,
+                    }]}>
+                    <Text style={[styles.themeOptionText, { color: themePreference === opt.value ? '#FFFFFF' : colors.textSecondary }]}>
+                      {opt.label}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
             </View>
-          </View>
 
-          {/* Language */}
+            {/* Language */}
+            <Pressable
+              onPress={() => setShowLangPicker(true)}
+              style={[styles.settingRow, { borderTopWidth: 1, borderTopColor: colors.border }]}
+            >
+              <View style={styles.settingRowLeft}>
+                <Ionicons name="language-outline" size={20} color={colors.textSecondary} />
+                <Text style={[styles.settingRowLabel, { color: colors.text }]}>{t('settings_language')}</Text>
+              </View>
+              <View style={styles.settingRowRight}>
+                <Text style={[styles.settingRowValue, { color: colors.textSecondary }]}>
+                  {currentLang.flag} {currentLang.name}
+                </Text>
+                <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
+              </View>
+            </Pressable>
+
+            {/* Notifications (Premium) */}
+            <Pressable
+              onPress={!isPremium ? () => router.push('/(app)/paywall') : undefined}
+              style={[styles.settingRow, { borderTopWidth: 1, borderTopColor: colors.border }]}
+            >
+              <View style={styles.settingRowLeft}>
+                <Ionicons name="notifications-outline" size={20} color={colors.textSecondary} />
+                <Text style={[styles.settingRowLabel, { color: colors.text }]}>{t('settings_notifications_label')}</Text>
+                {!isPremium && <Ionicons name="star" size={14} color={colors.accent} />}
+              </View>
+              {isPremium ? (
+                <Switch
+                  value={notificationsEnabled}
+                  onValueChange={handleToggleNotifications}
+                  trackColor={{ false: colors.border, true: colors.accent }}
+                  thumbColor="#FFFFFF"
+                />
+              ) : (
+                <Ionicons name="lock-closed" size={16} color={colors.textTertiary} />
+              )}
+            </Pressable>
+
+            {/* Offline Mode (Premium) */}
+            <Pressable
+              onPress={!isPremium ? () => router.push('/(app)/paywall') : undefined}
+              style={[styles.settingRow, { borderTopWidth: 1, borderTopColor: colors.border }]}
+            >
+              <View style={styles.settingRowLeft}>
+                <Ionicons name="cloud-offline-outline" size={20} color={colors.textSecondary} />
+                <Text style={[styles.settingRowLabel, { color: colors.text }]}>{t('settings_offline_mode')}</Text>
+                {!isPremium && <Ionicons name="star" size={14} color={colors.accent} />}
+              </View>
+              {isPremium ? (
+                offlineLoading ? (
+                  <Text style={[styles.settingRowValue, { color: colors.textTertiary }]}>{t('settings_offline_downloading')}</Text>
+                ) : (
+                  <Switch
+                    value={offlineModeEnabled}
+                    onValueChange={handleToggleOfflineMode}
+                    trackColor={{ false: colors.border, true: colors.accent }}
+                    thumbColor="#FFFFFF"
+                  />
+                )
+              ) : (
+                <Ionicons name="lock-closed" size={16} color={colors.textTertiary} />
+              )}
+            </Pressable>
+          </View>
+        </View>
+
+        {/* Premium (test) */}
+        <View style={styles.section}>
           <Pressable
-            onPress={() => setShowLangPicker(true)}
-            style={[styles.card, styles.settingRow, { backgroundColor: colors.surface, borderColor: colors.border, marginTop: spacing.md }]}
+            onPress={() => router.push('/(app)/paywall')}
+            style={[styles.card, styles.settingRow, { backgroundColor: colors.accentLight, borderColor: colors.accent }]}
           >
             <View style={styles.settingRowLeft}>
-              <Ionicons name="language-outline" size={20} color={colors.textSecondary} />
-              <Text style={[styles.settingRowLabel, { color: colors.text }]}>{t('settings_language')}</Text>
-            </View>
-            <View style={styles.settingRowRight}>
-              <Text style={[styles.settingRowValue, { color: colors.textSecondary }]}>
-                {currentLang.flag} {currentLang.name}
+              <Ionicons name="star" size={20} color={colors.accent} />
+              <Text style={[styles.settingRowLabel, { color: colors.accent }]}>
+                {t('paywall_upgrade')}
               </Text>
-              <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
             </View>
+            <Ionicons name="chevron-forward" size={18} color={colors.accent} />
           </Pressable>
-
-          {/* Notifications */}
-          <View style={[styles.card, styles.settingRow, { backgroundColor: colors.surface, borderColor: colors.border, marginTop: spacing.md }]}>
-            <View style={styles.settingRowLeft}>
-              <Ionicons name="notifications-outline" size={20} color={colors.textSecondary} />
-              <Text style={[styles.settingRowLabel, { color: colors.text }]}>{t('settings_notifications_label')}</Text>
-            </View>
-            <Switch
-              value={notificationsEnabled}
-              onValueChange={handleToggleNotifications}
-              trackColor={{ false: colors.border, true: colors.accent }}
-              thumbColor="#FFFFFF"
-            />
-          </View>
-
-          {/* Offline Mode */}
-          <View style={[styles.card, styles.settingRow, { backgroundColor: colors.surface, borderColor: colors.border, marginTop: spacing.md }]}>
-            <View style={styles.settingRowLeft}>
-              <Ionicons name="cloud-offline-outline" size={20} color={colors.textSecondary} />
-              <Text style={[styles.settingRowLabel, { color: colors.text }]}>{t('settings_offline_mode')}</Text>
-            </View>
-            {offlineLoading ? (
-              <Text style={[styles.settingRowValue, { color: colors.textTertiary }]}>{t('settings_offline_downloading')}</Text>
-            ) : (
-              <Switch
-                value={offlineModeEnabled}
-                onValueChange={handleToggleOfflineMode}
-                trackColor={{ false: colors.border, true: colors.accent }}
-                thumbColor="#FFFFFF"
-              />
-            )}
-          </View>
         </View>
 
         {/* Account */}

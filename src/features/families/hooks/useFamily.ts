@@ -22,6 +22,7 @@ export function useUserFamily() {
         id: families.id,
         name: families.name,
         inviteCode: families.invite_code,
+        isPremium: families.is_premium,
       });
     }
   }, [query.data, setFamily]);

@@ -11,11 +11,9 @@ import {
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/useTheme';
-import { useUIStore } from '@/stores/ui';
 import { useTranslation } from '@/i18n';
 import { Button } from '@/components/ui/Button';
 import { spacing } from '@/theme';
-import { storage } from '@/lib/storage';
 
 const { width } = Dimensions.get('window');
 
@@ -25,7 +23,6 @@ export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const [currentPage, setCurrentPage] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
-  const setHasCompletedOnboarding = useUIStore((s) => s.setHasCompletedOnboarding);
 
   const pages = useMemo(() => [
     { emoji: '🏠', title: t('onboarding_title_1'), subtitle: t('onboarding_subtitle_1') },
@@ -42,9 +39,7 @@ export default function WelcomeScreen() {
 
   const handleButtonPress = () => {
     if (isLastPage) {
-      storage.set('onboarding.completed', true);
-      setHasCompletedOnboarding(true);
-      router.replace('/(auth)/sign-in');
+      router.push('/(auth)/paywall');
     } else {
       scrollRef.current?.scrollTo({ x: (currentPage + 1) * width, animated: true });
     }

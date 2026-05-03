@@ -2,14 +2,13 @@ import { useState, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Image, RefreshControl } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/useTheme';
 import { useNotes, useCreateNote, useReorderNotes } from '@/features/notes/hooks/useNotes';
 import { useFamilyMembers } from '@/features/families/hooks/useFamily';
 import { useFamilyStore } from '@/stores/family';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { spacing, radii } from '@/theme';
 import { lightHaptic, selectionHaptic, mediumHaptic } from '@/lib/haptics';
@@ -233,16 +232,22 @@ export default function HomeScreen() {
         index={-1}
         snapPoints={[320]}
         enablePanDownToClose
+        enableDynamicSizing={false}
+        keyboardBehavior="interactive"
+        keyboardBlurBehavior="restore"
+        android_keyboardInputMode="adjustResize"
         backgroundStyle={{ backgroundColor: colors.surface }}
         handleIndicatorStyle={{ backgroundColor: colors.border }}
       >
         <BottomSheetView style={[styles.sheetContent, { paddingBottom: insets.bottom + spacing.lg }]}>
           <Text style={[styles.sheetTitle, { color: colors.text }]}>{t('home_new_checklist')}</Text>
-          <Input
+          <BottomSheetTextInput
             placeholder={t('home_checklist_placeholder')}
             value={newTitle}
             onChangeText={setNewTitle}
             autoCapitalize="sentences"
+            placeholderTextColor={colors.textTertiary}
+            style={[styles.sheetInput, { backgroundColor: colors.surfaceSecondary, color: colors.text }]}
           />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.iconRow}>
             {NOTE_ICONS.map((icon) => (
@@ -296,4 +301,5 @@ const styles = StyleSheet.create({
   sheetTitle: { fontSize: 20, fontWeight: '600' },
   iconRow: { gap: spacing.sm },
   iconOption: { width: 40, height: 40, borderRadius: radii.md, alignItems: 'center', justifyContent: 'center', borderWidth: 2 },
+  sheetInput: { fontSize: 16, paddingVertical: spacing.md + 2, paddingHorizontal: spacing.lg, borderRadius: radii.md, width: '100%' },
 });

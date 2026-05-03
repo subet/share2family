@@ -42,6 +42,7 @@ export default function EditFamilyScreen() {
         id: familyId,
         name: name.trim(),
         inviteCode: inviteCode,
+        isPremium: useFamilyStore.getState().isPremium,
       });
       queryClient.invalidateQueries({ queryKey: ['family'] });
       router.back();
