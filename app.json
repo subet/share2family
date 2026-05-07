@@ -31,8 +31,7 @@
       },
       "package": "com.mudimedia.share2family",
       "edgeToEdgeEnabled": true,
-      "googleServicesFile": "./google-services.json",
-      "package": "com.mudimedia.share2family"
+      "googleServicesFile": "./google-services.json"
     },
     "plugins": [
       "expo-router",
@@ -59,8 +58,11 @@
       [
         "expo-splash-screen",
         {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
           "backgroundColor": "#FAFAF7",
           "dark": {
+            "image": "./assets/splash-icon.png",
             "backgroundColor": "#0F0F0F"
           }
         }
