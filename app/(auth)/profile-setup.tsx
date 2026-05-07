@@ -38,10 +38,15 @@ export default function ProfileSetupScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.background }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: colors.background }}
+      behavior="padding"
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -insets.bottom}
+    >
       <ScrollView
         contentContainerStyle={[styles.container, { paddingTop: insets.top + spacing['3xl'], paddingBottom: insets.bottom + spacing.lg }]}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
           <Text style={[styles.title, { color: colors.text }]}>{t('profile_setup_title')}</Text>

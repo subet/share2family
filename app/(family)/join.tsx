@@ -118,6 +118,6 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '700' },
   subtitle: { fontSize: 17, lineHeight: 24 },
   inputContainer: { alignItems: 'center', marginBottom: spacing['3xl'] },
-  codeInput: { fontSize: 32, fontWeight: '700', letterSpacing: 6, paddingVertical: spacing.xl, paddingHorizontal: spacing['3xl'], borderRadius: radii.lg, borderWidth: 2, width: '100%' },
+  codeInput: { fontSize: 32, fontWeight: '700', letterSpacing: 6, textAlign: 'center', paddingVertical: spacing.xl, paddingHorizontal: spacing['3xl'], borderRadius: radii.lg, borderWidth: 2, width: '100%' },
   footer: { marginTop: 'auto', gap: spacing.md },
 });

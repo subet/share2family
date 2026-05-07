@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,8 +35,8 @@ const FEATURES = [
   { icon: 'download-outline' as const, key: 'paywall_feature_5' },
 ];
 
-const PRIVACY_URL = 'https://mudimedia.com/privacy';
-const TERMS_URL = 'https://mudimedia.com/terms';
+const PRIVACY_URL = 'https://mudimedia.com/en/privacy-policy';
+const TERMS_URL = 'https://mudimedia.com/en/terms';
 
 export function PaywallScreen({ variant, onClose, onSuccess }: PaywallScreenProps) {
   const { colors } = useTheme();
@@ -153,17 +154,21 @@ export function PaywallScreen({ variant, onClose, onSuccess }: PaywallScreenProp
         </Pressable>
       )}
 
-      {/* Top illustration */}
-      <View style={styles.imageArea}>
-        <Image
-          source={require('../../assets/paywall-top.png')}
-          style={styles.heroImage}
-          resizeMode="cover"
-        />
-      </View>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: insets.bottom + spacing.lg }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Top illustration */}
+        <View style={styles.imageArea}>
+          <Image
+            source={require('../../assets/paywall-top.png')}
+            style={styles.heroImage}
+            resizeMode="cover"
+          />
+        </View>
 
-      {/* Bottom-aligned content */}
-      <View style={[styles.bottomContent, { paddingBottom: spacing.lg }]}>
+        {/* Bottom-aligned content */}
+        <View style={styles.bottomContent}>
         {/* Header */}
         <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.header}>
           <Text style={[styles.title, { color: colors.text }]}>
@@ -309,6 +314,7 @@ export function PaywallScreen({ variant, onClose, onSuccess }: PaywallScreenProp
           </View>
         </Animated.View>
       </View>
+      </ScrollView>
     </View>
   );
 }
@@ -328,12 +334,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   imageArea: {
-    flex: 1,
+    width: '100%',
+    aspectRatio: 1,
     marginTop: -20,
   },
   heroImage: {
     width: '100%',
-    height: '85%',
+    height: '100%',
   },
   bottomContent: {
     paddingHorizontal: spacing['2xl'],
