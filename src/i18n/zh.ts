@@ -44,7 +44,7 @@ export const zh: Record<keyof TranslationKeys, string> = {
   edit_family_leave: '离开家庭', edit_family_leave_title: '离开家庭',
   edit_family_leave_message: '确定吗？你将失去对所有共享清单的访问权限。',
   edit_family_leave_confirm: '离开',
-  settings_title: '设置', settings_guest_account: '访客账户', settings_family: '家庭',
+  settings_title: '设置', settings_guest_account: '访客账户', settings_signed_in_with_apple: '已用 Apple 登录', settings_signed_in_with_google: '已用 Google 登录', settings_family: '家庭',
   settings_preferences: '偏好设置', settings_theme: '主题',
   settings_theme_system: '系统', settings_theme_light: '浅色', settings_theme_dark: '深色',
   settings_language: '语言', settings_notifications: '通知',

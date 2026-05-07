@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "960531344769",
+    "project_id": "share2family-d5e7e",
+    "storage_bucket": "share2family-d5e7e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960531344769:android:1fd21770cb0fd6a52e4c80",
+        "android_client_info": {
+          "package_name": "com.mudimedia.share2family"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzDD8SIQEtFG7StvI5hhpDgmBJQsYme44"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

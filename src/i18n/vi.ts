@@ -44,7 +44,7 @@ export const vi: Record<keyof TranslationKeys, string> = {
   edit_family_leave: 'Rời gia đình', edit_family_leave_title: 'Rời gia đình',
   edit_family_leave_message: 'Bạn chắc chứ? Bạn sẽ mất quyền truy cập vào tất cả danh sách chung.',
   edit_family_leave_confirm: 'Rời',
-  settings_title: 'Cài đặt', settings_guest_account: 'Tài khoản khách', settings_family: 'Gia đình',
+  settings_title: 'Cài đặt', settings_guest_account: 'Tài khoản khách', settings_signed_in_with_apple: 'Đã đăng nhập bằng Apple', settings_signed_in_with_google: 'Đã đăng nhập bằng Google', settings_family: 'Gia đình',
   settings_preferences: 'Tùy chọn', settings_theme: 'Giao diện',
   settings_theme_system: 'Hệ thống', settings_theme_light: 'Sáng', settings_theme_dark: 'Tối',
   settings_language: 'Ngôn ngữ', settings_notifications: 'Thông báo',

@@ -10,7 +10,7 @@
       "autoIncrement": true
     },
     "preview": {
-      "distribution": "store",
+      "distribution": "internal",
       "autoIncrement": true
     },
     "production": {

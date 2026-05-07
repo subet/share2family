@@ -44,7 +44,7 @@ export const ru: Record<keyof TranslationKeys, string> = {
   edit_family_leave: 'Покинуть семью', edit_family_leave_title: 'Покинуть семью',
   edit_family_leave_message: 'Вы уверены? Вы потеряете доступ ко всем общим спискам.',
   edit_family_leave_confirm: 'Покинуть',
-  settings_title: 'Настройки', settings_guest_account: 'Гостевой аккаунт', settings_family: 'Семья',
+  settings_title: 'Настройки', settings_guest_account: 'Гостевой аккаунт', settings_signed_in_with_apple: 'Вход через Apple', settings_signed_in_with_google: 'Вход через Google', settings_family: 'Семья',
   settings_preferences: 'Предпочтения', settings_theme: 'Тема',
   settings_theme_system: 'Система', settings_theme_light: 'Светлая', settings_theme_dark: 'Тёмная',
   settings_language: 'Язык', settings_notifications: 'Уведомления',

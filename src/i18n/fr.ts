@@ -90,6 +90,8 @@ export const fr: Record<keyof TranslationKeys, string> = {
   edit_family_leave_confirm: 'Quitter',
   settings_title: 'Paramètres',
   settings_guest_account: 'Compte invité',
+  settings_signed_in_with_apple: 'Connecté avec Apple',
+  settings_signed_in_with_google: 'Connecté avec Google',
   settings_family: 'Famille',
   settings_preferences: 'Préférences',
   settings_theme: 'Thème',

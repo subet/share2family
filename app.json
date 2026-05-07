@@ -30,7 +30,9 @@
         "backgroundColor": "#FAFAF7"
       },
       "package": "com.mudimedia.share2family",
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "googleServicesFile": "./google-services.json",
+      "package": "com.mudimedia.share2family"
     },
     "plugins": [
       "expo-router",

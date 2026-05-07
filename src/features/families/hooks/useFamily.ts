@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 export function useUserFamily() {
   const user = useAuthStore((s) => s.user);
   const setFamily = useFamilyStore((s) => s.setFamily);
-  const setMembers = useFamilyStore((s) => s.setMembers);
+  const clearFamily = useFamilyStore((s) => s.clearFamily);
 
   const query = useQuery({
     queryKey: ['family', user?.id],
@@ -16,6 +16,7 @@ export function useUserFamily() {
   });
 
   useEffect(() => {
+    if (!query.isSuccess || query.isFetching) return;
     const families = query.data?.families;
     if (families) {
       setFamily({
@@ -24,8 +25,10 @@ export function useUserFamily() {
         inviteCode: families.invite_code,
         isPremium: families.is_premium,
       });
+    } else {
+      clearFamily();
     }
-  }, [query.data, setFamily]);
+  }, [query.isSuccess, query.isFetching, query.data, setFamily, clearFamily]);
 
   return query;
 }

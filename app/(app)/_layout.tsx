@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/useTheme';
 import { useUserFamily } from '@/features/families/hooks/useFamily';
@@ -13,7 +14,13 @@ export default function AppLayout() {
   const { t } = useTranslation();
 
   // Ensure family store is populated when entering the app group
-  useUserFamily();
+  const { data: familyData, isSuccess: familyLoaded, isFetching: familyFetching } = useUserFamily();
+
+  useEffect(() => {
+    if (familyLoaded && !familyFetching && !familyData?.families) {
+      router.replace('/(family)/create');
+    }
+  }, [familyLoaded, familyFetching, familyData]);
 
   if (shouldShowBanner) {
     return (

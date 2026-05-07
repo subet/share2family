@@ -44,7 +44,7 @@ export const bn: Record<keyof TranslationKeys, string> = {
   edit_family_leave: 'পরিবার ছেড়ে দিন', edit_family_leave_title: 'পরিবার ছেড়ে দিন',
   edit_family_leave_message: 'আপনি কি নিশ্চিত? সব ভাগ করা তালিকায় অ্যাক্সেস হারাবেন।',
   edit_family_leave_confirm: 'ছেড়ে দিন',
-  settings_title: 'সেটিংস', settings_guest_account: 'অতিথি অ্যাকাউন্ট', settings_family: 'পরিবার',
+  settings_title: 'সেটিংস', settings_guest_account: 'অতিথি অ্যাকাউন্ট', settings_signed_in_with_apple: 'Apple দিয়ে সাইন ইন করা হয়েছে', settings_signed_in_with_google: 'Google দিয়ে সাইন ইন করা হয়েছে', settings_family: 'পরিবার',
   settings_preferences: 'পছন্দসমূহ', settings_theme: 'থিম',
   settings_theme_system: 'সিস্টেম', settings_theme_light: 'লাইট', settings_theme_dark: 'ডার্ক',
   settings_language: 'ভাষা', settings_notifications: 'বিজ্ঞপ্তি',

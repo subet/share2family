@@ -44,7 +44,7 @@ export const es: Record<keyof TranslationKeys, string> = {
   edit_family_leave: 'Abandonar familia', edit_family_leave_title: 'Abandonar familia',
   edit_family_leave_message: '¿Estás seguro? Perderás acceso a todas las listas compartidas.',
   edit_family_leave_confirm: 'Abandonar',
-  settings_title: 'Ajustes', settings_guest_account: 'Cuenta de invitado', settings_family: 'Familia',
+  settings_title: 'Ajustes', settings_guest_account: 'Cuenta de invitado', settings_signed_in_with_apple: 'Sesión iniciada con Apple', settings_signed_in_with_google: 'Sesión iniciada con Google', settings_family: 'Familia',
   settings_preferences: 'Preferencias', settings_theme: 'Tema',
   settings_theme_system: 'Sistema', settings_theme_light: 'Claro', settings_theme_dark: 'Oscuro',
   settings_language: 'Idioma', settings_notifications: 'Notificaciones',

@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/Button';
 import { spacing, radii } from '@/theme';
 import { selectionHaptic } from '@/lib/haptics';
 import { signOut } from '@/lib/auth';
-import { registerForPushNotifications, saveDeviceToken, removeDeviceToken } from '@/lib/notifications';
+import { registerForPushNotifications, saveDeviceToken, removeDeviceToken, setNotificationsEnabled as setProfileNotifEnabled } from '@/lib/notifications';
 import { checkIsConnected } from '@/lib/network';
 import { warmCache } from '@/features/sync/cacheWarmer';
 import { clearAllCache } from '@/lib/offlineCache';
@@ -33,6 +33,14 @@ export default function SettingsScreen() {
   const members = useFamilyStore((s) => s.members);
   useFamilyMembers(familyId);
   const isAnonymous = useAuthStore((s) => s.isAnonymous);
+  const authProvider = useAuthStore((s) => s.user?.app_metadata?.provider);
+  const accountBadge = isAnonymous
+    ? t('settings_guest_account')
+    : authProvider === 'apple'
+      ? t('settings_signed_in_with_apple')
+      : authProvider === 'google'
+        ? t('settings_signed_in_with_google')
+        : null;
   const themePreference = useUIStore((s) => s.themePreference);
   const setThemePreference = useUIStore((s) => s.setThemePreference);
   const language = useUIStore((s) => s.language);
@@ -72,10 +80,14 @@ export default function SettingsScreen() {
       const token = await registerForPushNotifications();
       if (token && user) {
         await saveDeviceToken(user.id, token);
+        await setProfileNotifEnabled(user.id, true);
         setNotificationsEnabled(true);
       }
     } else {
-      if (user) await removeDeviceToken(user.id);
+      if (user) {
+        await removeDeviceToken(user.id);
+        await setProfileNotifEnabled(user.id, false);
+      }
       setNotificationsEnabled(false);
     }
   };
@@ -123,9 +135,9 @@ export default function SettingsScreen() {
                 <Text style={[styles.profileName, { color: colors.text }]}>
                   {profile?.display_name ?? 'User'}
                 </Text>
-                {isAnonymous && (
+                {accountBadge && (
                   <Text style={[styles.profileBadge, { color: colors.textTertiary }]}>
-                    {t('settings_guest_account')}
+                    {accountBadge}
                   </Text>
                 )}
               </View>

@@ -103,6 +103,8 @@ export const de: Record<keyof TranslationKeys, string> = {
 
   settings_title: 'Einstellungen',
   settings_guest_account: 'Gastkonto',
+  settings_signed_in_with_apple: 'Mit Apple angemeldet',
+  settings_signed_in_with_google: 'Mit Google angemeldet',
   settings_family: 'Familie',
   settings_preferences: 'Einstellungen',
   settings_theme: 'Design',

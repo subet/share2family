@@ -79,7 +79,12 @@ function NotificationListener() {
         type?: string;
         listId?: string;
       };
-      if (data?.type === 'new_list' && data?.listId) {
+      const opensList =
+        data?.type === 'new_list' ||
+        data?.type === 'list_created' ||
+        data?.type === 'item_added' ||
+        data?.type === 'list_completed';
+      if (opensList && data?.listId) {
         router.push({ pathname: '/(app)/list/[id]', params: { id: data.listId } });
       }
     });

@@ -44,7 +44,7 @@ export const nl: Record<keyof TranslationKeys, string> = {
   edit_family_leave: 'Familie verlaten', edit_family_leave_title: 'Familie verlaten',
   edit_family_leave_message: 'Weet je het zeker? Je verliest toegang tot alle gedeelde lijsten.',
   edit_family_leave_confirm: 'Verlaten',
-  settings_title: 'Instellingen', settings_guest_account: 'Gastaccount', settings_family: 'Familie',
+  settings_title: 'Instellingen', settings_guest_account: 'Gastaccount', settings_signed_in_with_apple: 'Aangemeld met Apple', settings_signed_in_with_google: 'Aangemeld met Google', settings_family: 'Familie',
   settings_preferences: 'Voorkeuren', settings_theme: 'Thema',
   settings_theme_system: 'Systeem', settings_theme_light: 'Licht', settings_theme_dark: 'Donker',
   settings_language: 'Taal', settings_notifications: 'Meldingen',

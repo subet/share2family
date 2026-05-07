@@ -44,7 +44,7 @@ export const id: Record<keyof TranslationKeys, string> = {
   edit_family_leave: 'Keluar dari keluarga', edit_family_leave_title: 'Keluar dari keluarga',
   edit_family_leave_message: 'Yakin? Kamu akan kehilangan akses ke semua daftar bersama.',
   edit_family_leave_confirm: 'Keluar',
-  settings_title: 'Pengaturan', settings_guest_account: 'Akun tamu', settings_family: 'Keluarga',
+  settings_title: 'Pengaturan', settings_guest_account: 'Akun tamu', settings_signed_in_with_apple: 'Masuk dengan Apple', settings_signed_in_with_google: 'Masuk dengan Google', settings_family: 'Keluarga',
   settings_preferences: 'Preferensi', settings_theme: 'Tema',
   settings_theme_system: 'Sistem', settings_theme_light: 'Terang', settings_theme_dark: 'Gelap',
   settings_language: 'Bahasa', settings_notifications: 'Notifikasi',

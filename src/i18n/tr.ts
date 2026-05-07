@@ -103,6 +103,8 @@ export const tr: Record<keyof TranslationKeys, string> = {
 
   settings_title: 'Ayarlar',
   settings_guest_account: 'Misafir hesap',
+  settings_signed_in_with_apple: 'Apple ile giriş yapıldı',
+  settings_signed_in_with_google: 'Google ile giriş yapıldı',
   settings_family: 'Aile',
   settings_preferences: 'Tercihler',
   settings_theme: 'Tema',

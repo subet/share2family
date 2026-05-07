@@ -40,3 +40,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Firebase admin SDK key — never commit (server-side credential)
+# google-services.json IS safe to commit (client config; restricted by package name + SHA-1)
+*-firebase-adminsdk-*.json

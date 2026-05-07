@@ -44,7 +44,7 @@ export const ur: Record<keyof TranslationKeys, string> = {
   edit_family_leave: 'خاندان چھوڑ دیں', edit_family_leave_title: 'خاندان چھوڑ دیں',
   edit_family_leave_message: 'کیا آپ کو یقین ہے؟ آپ تمام مشترکہ فہرستوں تک رسائی کھو دیں گے۔',
   edit_family_leave_confirm: 'چھوڑ دیں',
-  settings_title: 'ترتیبات', settings_guest_account: 'مہمان اکاؤنٹ', settings_family: 'خاندان',
+  settings_title: 'ترتیبات', settings_guest_account: 'مہمان اکاؤنٹ', settings_signed_in_with_apple: 'Apple سے سائن ان', settings_signed_in_with_google: 'Google سے سائن ان', settings_family: 'خاندان',
   settings_preferences: 'ترجیحات', settings_theme: 'تھیم',
   settings_theme_system: 'سسٹم', settings_theme_light: 'روشن', settings_theme_dark: 'تاریک',
   settings_language: 'زبان', settings_notifications: 'اطلاعات',

@@ -115,6 +115,8 @@ export const en = {
   // Settings
   settings_title: 'Settings',
   settings_guest_account: 'Guest account',
+  settings_signed_in_with_apple: 'Signed in with Apple',
+  settings_signed_in_with_google: 'Signed in with Google',
   settings_family: 'Family',
   settings_preferences: 'Preferences',
   settings_theme: 'Theme',

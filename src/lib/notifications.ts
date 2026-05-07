@@ -54,7 +54,6 @@ export async function saveDeviceToken(userId: string, pushToken: string): Promis
   const deviceName = Device.deviceName ?? `${Device.brand ?? ''} ${Device.modelName ?? ''}`.trim();
   const platform = Platform.OS as 'ios' | 'android';
 
-  // Upsert based on user + token
   await supabase.from('devices').upsert(
     {
       user_id: userId,
@@ -63,8 +62,16 @@ export async function saveDeviceToken(userId: string, pushToken: string): Promis
       push_token: pushToken,
       last_active: new Date().toISOString(),
     },
-    { onConflict: 'user_id' },
+    { onConflict: 'user_id,push_token' },
   );
+}
+
+export async function setNotificationsEnabled(userId: string, enabled: boolean): Promise<void> {
+  // Cast: column added in migration 009; types regen pending.
+  await supabase
+    .from('profiles')
+    .update({ notifications_enabled: enabled } as unknown as { display_name: string })
+    .eq('id', userId);
 }
 
 export async function removeDeviceToken(userId: string): Promise<void> {

@@ -44,7 +44,7 @@ export const ko: Record<keyof TranslationKeys, string> = {
   edit_family_leave: '가족 떠나기', edit_family_leave_title: '가족 떠나기',
   edit_family_leave_message: '확실합니까? 모든 공유 목록에 대한 접근을 잃게 됩니다.',
   edit_family_leave_confirm: '떠나기',
-  settings_title: '설정', settings_guest_account: '게스트 계정', settings_family: '가족',
+  settings_title: '설정', settings_guest_account: '게스트 계정', settings_signed_in_with_apple: 'Apple로 로그인됨', settings_signed_in_with_google: 'Google로 로그인됨', settings_family: '가족',
   settings_preferences: '환경설정', settings_theme: '테마',
   settings_theme_system: '시스템', settings_theme_light: '라이트', settings_theme_dark: '다크',
   settings_language: '언어', settings_notifications: '알림',

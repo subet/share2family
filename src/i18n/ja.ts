@@ -44,7 +44,7 @@ export const ja: Record<keyof TranslationKeys, string> = {
   edit_family_leave: 'ファミリーを離れる', edit_family_leave_title: 'ファミリーを離れる',
   edit_family_leave_message: 'よろしいですか？すべての共有リストへのアクセスを失います。',
   edit_family_leave_confirm: '離れる',
-  settings_title: '設定', settings_guest_account: 'ゲストアカウント', settings_family: 'ファミリー',
+  settings_title: '設定', settings_guest_account: 'ゲストアカウント', settings_signed_in_with_apple: 'Appleでサインイン済み', settings_signed_in_with_google: 'Googleでサインイン済み', settings_family: 'ファミリー',
   settings_preferences: '設定', settings_theme: 'テーマ',
   settings_theme_system: 'システム', settings_theme_light: 'ライト', settings_theme_dark: 'ダーク',
   settings_language: '言語', settings_notifications: '通知',
