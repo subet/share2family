@@ -60,5 +60,8 @@
     "prettier": "^3.8.3",
     "typescript": "~5.9.2"
   },
+  "overrides": {
+    "lightningcss": "1.32.0"
+  },
   "private": true
 }
