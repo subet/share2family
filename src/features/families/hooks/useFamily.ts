@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth';
 import { useFamilyStore } from '@/stores/family';
+import { usePremiumStore } from '@/stores/premium';
 import * as api from '../api';
 import { useEffect } from 'react';
 
@@ -63,7 +64,19 @@ export function useCreateFamily() {
   const user = useAuthStore((s) => s.user);
 
   return useMutation({
-    mutationFn: (name: string) => api.createFamily(name, user!.id),
+    mutationFn: async (name: string) => {
+      const result = await api.createFamily(name, user!.id);
+      // If the creator already has an active RevenueCat subscription, carry
+      // it over to the new family so they keep premium features.
+      if (usePremiumStore.getState().isPremium) {
+        try {
+          await api.upgradeFamilyToPremium(result.id);
+        } catch (e) {
+          console.warn('[CreateFamily] Failed to apply premium to new family:', e);
+        }
+      }
+      return result;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['family'] });
     },
@@ -84,15 +97,30 @@ export function useJoinFamily() {
 
 export function useLeaveFamily() {
   const queryClient = useQueryClient();
-  const user = useAuthStore((s) => s.user);
   const clearFamily = useFamilyStore((s) => s.clearFamily);
 
   return useMutation({
-    mutationFn: (familyId: string) => api.leaveFamily(familyId, user!.id),
+    mutationFn: (familyId: string) => api.leaveFamily(familyId),
     onSuccess: () => {
       clearFamily();
       queryClient.invalidateQueries({ queryKey: ['family'] });
       queryClient.invalidateQueries({ queryKey: ['notes'] });
+      queryClient.invalidateQueries({ queryKey: ['familyMembers'] });
+    },
+  });
+}
+
+export function useRemoveFamilyMember() {
+  const queryClient = useQueryClient();
+  const familyId = useFamilyStore((s) => s.familyId);
+
+  return useMutation({
+    mutationFn: ({ userId }: { userId: string }) =>
+      api.removeFamilyMember(familyId!, userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['familyMembers', familyId] });
+      queryClient.invalidateQueries({ queryKey: ['family'] });
+      queryClient.invalidateQueries({ queryKey: ['notes', familyId] });
     },
   });
 }

@@ -109,8 +109,12 @@ export const en = {
   edit_family_invite_hint: 'Share this code with your partner to join',
   edit_family_leave: 'Leave family',
   edit_family_leave_title: 'Leave family',
-  edit_family_leave_message: 'Are you sure? You will lose access to all shared lists.',
+  edit_family_leave_message: 'Your lists and items will stay with the family. You will return to the start screen.',
+  edit_family_leave_last_message: 'You are the last member. All lists, items, and the family will be permanently deleted. This cannot be undone.',
   edit_family_leave_confirm: 'Leave',
+  edit_family_remove_title: 'Remove member?',
+  edit_family_remove_message: 'Remove {{name}} from the family? Their notes and items will be transferred to you.',
+  edit_family_remove_confirm: 'Remove',
 
   // Settings
   settings_title: 'Settings',
@@ -152,6 +156,10 @@ export const en = {
   paywall_popular: 'Popular',
   paywall_one_time: 'One-time',
   paywall_continue: 'Continue',
+  paywall_cta_subscribe_weekly: 'Subscribe Weekly · {{price}}',
+  paywall_cta_subscribe_monthly: 'Subscribe Monthly · {{price}}',
+  paywall_cta_subscribe_yearly: 'Subscribe Yearly · {{price}}',
+  paywall_cta_buy_lifetime: 'Pay Once · {{price}}',
   paywall_restore: 'Restore purchases',
   paywall_restoring: 'Restoring...',
   paywall_terms: 'Terms of Use',
@@ -169,6 +177,7 @@ export const en = {
   paywall_unavailable: 'Subscriptions are currently unavailable. Please try again later.',
   paywall_skip: 'Skip',
   paywall_upgrade: 'Upgrade to Premium',
+  settings_premium_badge: 'Premium',
 };
 
 export type TranslationKeys = typeof en;

@@ -6,7 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/useTheme';
 import { useTranslation } from '@/i18n';
 import { useFamilyStore } from '@/stores/family';
-import { useLeaveFamily } from '@/features/families/hooks/useFamily';
+import { useAuthStore } from '@/stores/auth';
+import { useLeaveFamily, useRemoveFamilyMember } from '@/features/families/hooks/useFamily';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -24,7 +25,13 @@ export default function EditFamilyScreen() {
   const familyName = useFamilyStore((s) => s.familyName);
   const inviteCode = useFamilyStore((s) => s.inviteCode);
   const members = useFamilyStore((s) => s.members);
+  const currentUserId = useAuthStore((s) => s.user?.id);
   const leaveFamily = useLeaveFamily();
+  const removeMember = useRemoveFamilyMember();
+
+  const isCurrentUserAdmin = members.some(
+    (m) => m.userId === currentUserId && m.role === 'admin',
+  );
 
   const [name, setName] = useState(familyName ?? '');
   const [saving, setSaving] = useState(false);
@@ -54,10 +61,38 @@ export default function EditFamilyScreen() {
     }
   };
 
+  const handleRemoveMember = (userId: string, displayName: string) => {
+    Alert.alert(
+      t('edit_family_remove_title'),
+      t('edit_family_remove_message', { name: displayName }),
+      [
+        { text: t('cancel'), style: 'cancel' },
+        {
+          text: t('edit_family_remove_confirm'),
+          style: 'destructive',
+          onPress: () => {
+            removeMember.mutate(
+              { userId },
+              {
+                onError: (error) => {
+                  const message = error instanceof Error ? error.message : t('error_generic');
+                  Alert.alert(t('error'), message);
+                },
+              },
+            );
+          },
+        },
+      ],
+    );
+  };
+
   const handleLeaveFamily = () => {
+    const isLastMember = members.length <= 1;
     Alert.alert(
       t('edit_family_leave_title'),
-      t('edit_family_leave_message'),
+      isLastMember
+        ? t('edit_family_leave_last_message')
+        : t('edit_family_leave_message'),
       [
         { text: t('cancel'), style: 'cancel' },
         {
@@ -67,6 +102,10 @@ export default function EditFamilyScreen() {
             if (familyId) {
               leaveFamily.mutate(familyId, {
                 onSuccess: () => router.replace('/'),
+                onError: (error) => {
+                  const message = error instanceof Error ? error.message : t('error_generic');
+                  Alert.alert(t('error'), message);
+                },
               });
             }
           },
@@ -108,20 +147,38 @@ export default function EditFamilyScreen() {
         <View style={styles.membersSection}>
           <Text style={[styles.membersLabel, { color: colors.textSecondary }]}>{t('edit_family_members')}</Text>
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            {members.map((m) => (
-              <View
-                key={m.userId}
-                style={[styles.memberRow, { borderBottomColor: colors.border }]}
-              >
-                <Text style={styles.memberEmoji}>{m.avatarEmoji}</Text>
-                <Text style={[styles.memberName, { color: colors.text }]}>
-                  {m.displayName}
-                </Text>
-                <Text style={[styles.memberRole, { color: colors.textTertiary }]}>
-                  {m.role}
-                </Text>
-              </View>
-            ))}
+            {members.map((m) => {
+              const canRemove =
+                isCurrentUserAdmin && m.userId !== currentUserId && m.role !== 'admin';
+              return (
+                <View
+                  key={m.userId}
+                  style={[styles.memberRow, { borderBottomColor: colors.border }]}
+                >
+                  <Text style={styles.memberEmoji}>{m.avatarEmoji}</Text>
+                  <Text style={[styles.memberName, { color: colors.text }]}>
+                    {m.displayName}
+                  </Text>
+                  <Text style={[styles.memberRole, { color: colors.textTertiary }]}>
+                    {m.role}
+                  </Text>
+                  {canRemove && (
+                    <Pressable
+                      onPress={() => handleRemoveMember(m.userId, m.displayName)}
+                      hitSlop={8}
+                      disabled={removeMember.isPending}
+                      style={styles.removeButton}
+                    >
+                      <Ionicons
+                        name="person-remove-outline"
+                        size={20}
+                        color={colors.destructive}
+                      />
+                    </Pressable>
+                  )}
+                </View>
+              );
+            })}
           </View>
         </View>
 
@@ -235,6 +292,10 @@ const styles = StyleSheet.create({
   memberRole: {
     fontSize: 13,
     textTransform: 'capitalize',
+  },
+  removeButton: {
+    padding: spacing.xs,
+    marginLeft: spacing.xs,
   },
   inviteSection: {
     gap: spacing.sm,

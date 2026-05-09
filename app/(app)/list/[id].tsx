@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Dimensions,
+  RefreshControl,
   Alert,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -17,7 +17,6 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useTheme } from '@/lib/useTheme';
@@ -30,32 +29,37 @@ import {
   useItemSuggestions,
 } from '@/features/checklists/hooks/useChecklist';
 import { useUpdateNote, useArchiveNote } from '@/features/notes/hooks/useNotes';
+import { useFamilyMembers } from '@/features/families/hooks/useFamily';
+import { useFamilyStore } from '@/stores/family';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Button } from '@/components/ui/Button';
 import { spacing, radii } from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { NOTE_ICONS, DEFAULT_NOTE_ICON } from '@/constants/emojis';
-import { lightHaptic, selectionHaptic, mediumHaptic, successHaptic } from '@/lib/haptics';
+import { lightHaptic, selectionHaptic, mediumHaptic } from '@/lib/haptics';
 import { useTranslation } from '@/i18n';
 import type { ChecklistItem } from '@/types/database';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SWIPE_THRESHOLD = 80;
+const REVEAL_OFFSET = -88;
+const SNAP_THRESHOLD = -44;
 
 const SwipeableItem = memo(function SwipeableItem({
   item,
   onToggle,
   onDelete,
+  authorEmoji,
 }: {
   item: ChecklistItem;
   onToggle: (id: string, completed: boolean) => void;
   onDelete: (id: string) => void;
+  authorEmoji: string | null;
 }) {
   const { colors } = useTheme();
   const translateX = useSharedValue(0);
+  const isOpen = useSharedValue(false);
 
   const doToggle = useCallback(() => {
-    successHaptic();
+    selectionHaptic();
     onToggle(item.id, !item.is_completed);
   }, [item.id, item.is_completed, onToggle]);
 
@@ -68,21 +72,17 @@ const SwipeableItem = memo(function SwipeableItem({
     .activeOffsetX([-10, 10])
     .failOffsetY([-5, 5])
     .onUpdate((e) => {
-      // Clamp: allow right swipe (positive) and left swipe (negative)
-      translateX.value = Math.max(-SCREEN_WIDTH, Math.min(SCREEN_WIDTH, e.translationX));
+      const startOffset = isOpen.value ? REVEAL_OFFSET : 0;
+      // Clamp to [REVEAL_OFFSET, 0] — left swipe only, no overshoot
+      translateX.value = Math.max(REVEAL_OFFSET, Math.min(0, startOffset + e.translationX));
     })
-    .onEnd((e) => {
-      if (e.translationX > SWIPE_THRESHOLD) {
-        // Swipe right → toggle complete
-        translateX.value = withTiming(0, { duration: 200 });
-        runOnJS(doToggle)();
-      } else if (e.translationX < -SWIPE_THRESHOLD) {
-        // Swipe left → delete
-        translateX.value = withTiming(-SCREEN_WIDTH, { duration: 200 }, () => {
-          runOnJS(doDelete)();
-        });
+    .onEnd(() => {
+      if (translateX.value < SNAP_THRESHOLD) {
+        translateX.value = withTiming(REVEAL_OFFSET, { duration: 180 });
+        isOpen.value = true;
       } else {
-        translateX.value = withTiming(0, { duration: 150 });
+        translateX.value = withTiming(0, { duration: 180 });
+        isOpen.value = false;
       }
     });
 
@@ -90,30 +90,21 @@ const SwipeableItem = memo(function SwipeableItem({
     transform: [{ translateX: translateX.value }],
   }));
 
-  // Green background revealed on right swipe
-  const leftActionStyle = useAnimatedStyle(() => ({
-    opacity: translateX.value > 20 ? 1 : 0,
-  }));
-
-  // Red background revealed on left swipe
-  const rightActionStyle = useAnimatedStyle(() => ({
-    opacity: translateX.value < -20 ? 1 : 0,
+  const deleteRevealStyle = useAnimatedStyle(() => ({
+    opacity: translateX.value < -4 ? 1 : 0,
   }));
 
   return (
     <View style={[styles.swipeContainer, { borderBottomColor: colors.border }]}>
-      {/* Left action - complete/uncomplete */}
-      <Animated.View style={[styles.actionBackground, styles.leftAction, leftActionStyle]}>
-        <Ionicons
-          name={item.is_completed ? 'arrow-undo-outline' : 'checkmark-circle-outline'}
-          size={24}
-          color="#FFFFFF"
-        />
-      </Animated.View>
-
-      {/* Right action - delete */}
-      <Animated.View style={[styles.actionBackground, styles.rightAction, rightActionStyle]}>
-        <Ionicons name="trash-outline" size={24} color="#FFFFFF" />
+      {/* Delete button revealed by left swipe */}
+      <Animated.View style={[styles.actionBackground, styles.rightAction, deleteRevealStyle]}>
+        <Pressable
+          onPress={doDelete}
+          hitSlop={8}
+          style={({ pressed }) => [styles.deleteButton, { opacity: pressed ? 0.7 : 1 }]}
+        >
+          <Ionicons name="trash-outline" size={22} color="#FFFFFF" />
+        </Pressable>
       </Animated.View>
 
       {/* Foreground row */}
@@ -125,18 +116,32 @@ const SwipeableItem = memo(function SwipeableItem({
             animatedRowStyle,
           ]}
         >
+          <Pressable onPress={doToggle} hitSlop={8} style={styles.checkboxHit}>
+            <View
+              style={[
+                styles.checkbox,
+                item.is_completed
+                  ? { backgroundColor: colors.accent, borderColor: colors.accent }
+                  : { backgroundColor: 'transparent', borderColor: colors.border },
+              ]}
+            >
+              {item.is_completed && (
+                <Ionicons name="checkmark" size={14} color="#FFFFFF" />
+              )}
+            </View>
+          </Pressable>
           <Text
             style={[
               styles.itemText,
-              {
-                color: item.is_completed ? colors.textTertiary : colors.text,
-                textDecorationLine: item.is_completed ? 'line-through' : 'none',
-              },
+              { color: item.is_completed ? colors.textTertiary : colors.text },
             ]}
             numberOfLines={2}
           >
             {item.content}
           </Text>
+          {authorEmoji && (
+            <Text style={styles.authorEmoji}>{authorEmoji}</Text>
+          )}
         </Animated.View>
       </GestureDetector>
     </View>
@@ -153,12 +158,26 @@ export default function ChecklistDetailScreen() {
     icon: string;
   }>();
 
-  const { data: items } = useChecklistItems(id);
+  const { data: items, refetch: refetchItems } = useChecklistItems(id);
+  const [refreshing, setRefreshing] = useState(false);
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetchItems();
+    setRefreshing(false);
+  }, [refetchItems]);
   const addItem = useAddChecklistItem(id);
   const toggleItem = useToggleChecklistItem(id);
   const deleteItem = useDeleteChecklistItem(id);
   const updateNote = useUpdateNote();
   const archiveNote = useArchiveNote();
+
+  const familyId = useFamilyStore((s) => s.familyId);
+  const members = useFamilyStore((s) => s.members);
+  useFamilyMembers(familyId);
+  const memberAvatars = members.reduce<Record<string, string>>((acc, m) => {
+    acc[m.userId] = m.avatarEmoji;
+    return acc;
+  }, {});
 
   const [newItemText, setNewItemText] = useState('');
   const inputRef = useRef<TextInput>(null);
@@ -296,6 +315,14 @@ export default function ChecklistDetailScreen() {
           style={styles.listContainer}
           contentContainerStyle={{ paddingBottom: spacing.lg }}
           keyboardShouldPersistTaps="handled"
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={colors.accent}
+              colors={[colors.accent]}
+            />
+          }
         >
           {uncompleted.map((item) => (
             <SwipeableItem
@@ -303,6 +330,7 @@ export default function ChecklistDetailScreen() {
               item={item}
               onToggle={handleToggle}
               onDelete={handleDelete}
+              authorEmoji={item.created_by ? memberAvatars[item.created_by] ?? null : null}
             />
           ))}
 
@@ -319,6 +347,7 @@ export default function ChecklistDetailScreen() {
                   item={item}
                   onToggle={handleToggle}
                   onDelete={handleDelete}
+                  authorEmoji={item.created_by ? memberAvatars[item.created_by] ?? null : null}
                 />
               ))}
             </>
@@ -490,18 +519,33 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   actionBackground: {
-    ...StyleSheet.absoluteFillObject,
-    flexDirection: 'row',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    width: 88,
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-  },
-  leftAction: {
-    backgroundColor: '#28A745',
-    justifyContent: 'flex-start',
   },
   rightAction: {
     backgroundColor: '#DC3545',
-    justifyContent: 'flex-end',
+  },
+  deleteButton: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxHit: {
+    padding: 2,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   itemRow: {
     flexDirection: 'row',
@@ -514,6 +558,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     lineHeight: 22,
+  },
+  authorEmoji: {
+    fontSize: 14,
+    opacity: 0.45,
+    marginLeft: spacing.sm,
   },
   completedHeader: {
     paddingTop: spacing.lg,

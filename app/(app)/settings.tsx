@@ -154,9 +154,19 @@ export default function SettingsScreen() {
             <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('settings_family')}</Text>
             <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <View style={styles.familyHeader}>
-                <Text style={[styles.familyTitle, { color: colors.text }]}>
-                  {familyName ?? 'Family'}
-                </Text>
+                <View style={styles.familyTitleRow}>
+                  <Text style={[styles.familyTitle, { color: colors.text }]}>
+                    {familyName ?? 'Family'}
+                  </Text>
+                  {isPremium && (
+                    <View style={[styles.premiumBadge, { backgroundColor: colors.accentLight, borderColor: colors.accent }]}>
+                      <Ionicons name="star" size={11} color={colors.accent} />
+                      <Text style={[styles.premiumBadgeText, { color: colors.accent }]}>
+                        {t('settings_premium_badge')}
+                      </Text>
+                    </View>
+                  )}
+                </View>
                 <Pressable onPress={() => router.push('/(app)/edit-family')} hitSlop={8}>
                   <Ionicons name="create-outline" size={20} color={colors.textSecondary} />
                 </Pressable>
@@ -262,21 +272,23 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Premium (test) */}
-        <View style={styles.section}>
-          <Pressable
-            onPress={() => router.push('/(app)/paywall')}
-            style={[styles.card, styles.settingRow, { backgroundColor: colors.accentLight, borderColor: colors.accent }]}
-          >
-            <View style={styles.settingRowLeft}>
-              <Ionicons name="star" size={20} color={colors.accent} />
-              <Text style={[styles.settingRowLabel, { color: colors.accent }]}>
-                {t('paywall_upgrade')}
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.accent} />
-          </Pressable>
-        </View>
+        {/* Premium upgrade CTA — only when not yet premium */}
+        {!isPremium && (
+          <View style={styles.section}>
+            <Pressable
+              onPress={() => router.push('/(app)/paywall')}
+              style={[styles.card, styles.settingRow, { backgroundColor: colors.accentLight, borderColor: colors.accent }]}
+            >
+              <View style={styles.settingRowLeft}>
+                <Ionicons name="star" size={20} color={colors.accent} />
+                <Text style={[styles.settingRowLabel, { color: colors.accent }]}>
+                  {t('paywall_upgrade')}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={colors.accent} />
+            </Pressable>
+          </View>
+        )}
 
         {/* Account */}
         <View style={styles.section}>
@@ -343,7 +355,10 @@ const styles = StyleSheet.create({
   profileName: { fontSize: 18, fontWeight: '600' },
   profileBadge: { fontSize: 13 },
   familyHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.lg },
+  familyTitleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flex: 1 },
   familyTitle: { fontSize: 17, fontWeight: '600' },
+  premiumBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radii.sm, borderWidth: 1 },
+  premiumBadgeText: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4 },
   memberRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md, paddingHorizontal: spacing.lg, borderTopWidth: 1, gap: spacing.md },
   memberEmoji: { fontSize: 24 },
   memberName: { flex: 1, fontSize: 16 },

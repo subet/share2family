@@ -100,12 +100,19 @@ export async function getFamilyMembers(familyId: string): Promise<FamilyMemberWi
   return (data ?? []) as FamilyMemberWithProfile[];
 }
 
-export async function leaveFamily(familyId: string, userId: string) {
-  const { error } = await supabase
-    .from('family_members')
-    .delete()
-    .eq('family_id', familyId)
-    .eq('user_id', userId);
+export async function leaveFamily(familyId: string) {
+  const { error } = await supabase.rpc('leave_family', {
+    p_family_id: familyId,
+  });
+
+  if (error) throw error;
+}
+
+export async function removeFamilyMember(familyId: string, userId: string) {
+  const { error } = await supabase.rpc('remove_family_member', {
+    p_family_id: familyId,
+    p_user_id: userId,
+  });
 
   if (error) throw error;
 }

@@ -14,12 +14,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { type PurchasesPackage, PACKAGE_TYPE } from 'react-native-purchases';
-import { useTheme } from '@/lib/useTheme';
+import { useQueryClient } from '@tanstack/react-query';
+import { colors as themeColors } from '@/theme/colors';
 import { useTranslation } from '@/i18n';
 import { spacing, radii } from '@/theme';
 import { lightHaptic, selectionHaptic } from '@/lib/haptics';
 import { getOfferings, purchasePackage, restorePurchases, checkPremiumAccess } from '@/lib/purchases';
 import { usePremiumStore } from '@/stores/premium';
+import { useFamilyStore } from '@/stores/family';
+import { upgradeFamilyToPremium } from '@/features/families/api';
 
 interface PaywallScreenProps {
   variant: 'onboarding' | 'modal';
@@ -39,10 +42,34 @@ const PRIVACY_URL = 'https://mudimedia.com/en/privacy-policy';
 const TERMS_URL = 'https://mudimedia.com/en/terms';
 
 export function PaywallScreen({ variant, onClose, onSuccess }: PaywallScreenProps) {
-  const { colors } = useTheme();
+  // Paywall is always light-themed — the hero illustration assumes a light background.
+  const colors = themeColors.light;
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const setIsPremium = usePremiumStore((s) => s.setIsPremium);
+  const familyId = useFamilyStore((s) => s.familyId);
+  const setFamily = useFamilyStore((s) => s.setFamily);
+  const familyState = useFamilyStore.getState;
+  const queryClient = useQueryClient();
+
+  const syncFamilyPremium = useCallback(async () => {
+    if (!familyId) return;
+    try {
+      await upgradeFamilyToPremium(familyId);
+      const current = familyState();
+      if (current.familyId === familyId) {
+        setFamily({
+          id: familyId,
+          name: current.familyName,
+          inviteCode: current.inviteCode,
+          isPremium: true,
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: ['family'] });
+    } catch (e) {
+      console.warn('[Paywall] Failed to sync family premium to server:', e);
+    }
+  }, [familyId, familyState, setFamily, queryClient]);
 
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -75,6 +102,7 @@ export function PaywallScreen({ variant, onClose, onSuccess }: PaywallScreenProp
         const isPremium = checkPremiumAccess(result.customerInfo);
         setIsPremium(isPremium);
         if (isPremium) {
+          await syncFamilyPremium();
           onSuccess?.();
           onClose();
         }
@@ -84,7 +112,7 @@ export function PaywallScreen({ variant, onClose, onSuccess }: PaywallScreenProp
     } finally {
       setPurchasing(false);
     }
-  }, [packages, selectedIndex, setIsPremium, onClose, onSuccess, t]);
+  }, [packages, selectedIndex, setIsPremium, onClose, onSuccess, syncFamilyPremium, t]);
 
   const handleRestore = useCallback(async () => {
     lightHaptic();
@@ -95,6 +123,7 @@ export function PaywallScreen({ variant, onClose, onSuccess }: PaywallScreenProp
         const isPremium = checkPremiumAccess(result.customerInfo);
         setIsPremium(isPremium);
         if (isPremium) {
+          await syncFamilyPremium();
           Alert.alert(t('paywall_restored_title'), t('paywall_restored_message'));
           onSuccess?.();
           onClose();
@@ -107,7 +136,7 @@ export function PaywallScreen({ variant, onClose, onSuccess }: PaywallScreenProp
     } finally {
       setRestoring(false);
     }
-  }, [setIsPremium, onClose, onSuccess, t]);
+  }, [setIsPremium, onClose, onSuccess, syncFamilyPremium, t]);
 
   const getPackageLabel = (pkg: PurchasesPackage): string => {
     switch (pkg.packageType) {
@@ -121,6 +150,22 @@ export function PaywallScreen({ variant, onClose, onSuccess }: PaywallScreenProp
         return t('paywall_lifetime');
       default:
         return pkg.product.title;
+    }
+  };
+
+  const getCtaLabel = (pkg: PurchasesPackage): string => {
+    const price = pkg.product.priceString;
+    switch (pkg.packageType) {
+      case PACKAGE_TYPE.WEEKLY:
+        return t('paywall_cta_subscribe_weekly', { price });
+      case PACKAGE_TYPE.MONTHLY:
+        return t('paywall_cta_subscribe_monthly', { price });
+      case PACKAGE_TYPE.ANNUAL:
+        return t('paywall_cta_subscribe_yearly', { price });
+      case PACKAGE_TYPE.LIFETIME:
+        return t('paywall_cta_buy_lifetime', { price });
+      default:
+        return t('paywall_continue');
     }
   };
 
@@ -163,7 +208,7 @@ export function PaywallScreen({ variant, onClose, onSuccess }: PaywallScreenProp
           <Image
             source={require('../../assets/paywall-top.png')}
             style={styles.heroImage}
-            resizeMode="cover"
+            resizeMode="contain"
           />
         </View>
 
@@ -271,7 +316,7 @@ export function PaywallScreen({ variant, onClose, onSuccess }: PaywallScreenProp
                 <ActivityIndicator color="#FFFFFF" size="small" />
               ) : (
                 <Text style={styles.ctaText}>
-                  {t('paywall_continue')}
+                  {selectedPkg ? getCtaLabel(selectedPkg) : t('paywall_continue')}
                 </Text>
               )}
             </Pressable>
@@ -335,12 +380,15 @@ const styles = StyleSheet.create({
   },
   imageArea: {
     width: '100%',
-    aspectRatio: 1,
-    marginTop: -20,
+    aspectRatio: 1.5,
+    marginTop: -10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   heroImage: {
     width: '100%',
     height: '100%',
+    alignSelf: 'center',
   },
   bottomContent: {
     paddingHorizontal: spacing['2xl'],

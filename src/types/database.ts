@@ -327,6 +327,14 @@ export interface Database {
         Args: { p_family_id: string };
         Returns: undefined;
       };
+      remove_family_member: {
+        Args: { p_family_id: string; p_user_id: string };
+        Returns: undefined;
+      };
+      leave_family: {
+        Args: { p_family_id: string };
+        Returns: undefined;
+      };
       is_family_member: {
         Args: { p_family_id: string };
         Returns: boolean;
